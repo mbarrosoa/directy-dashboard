@@ -83,9 +83,9 @@ th{color:var(--ink2);font-weight:600;font-size:12px}
   </div>
   <div class="kpis" id="kpis"></div>
   <div class="grid">
-    <div class="card"><h3>Faturamento x Meta por ano</h3><div class="note">Barra = faturamento · traço = meta</div><div class="legend"><span><i style="background:var(--s1)"></i>Faturamento</span><span><i class="line" style="background:var(--meta)"></i>Meta</span></div><div id="cAno"></div></div>
-    <div class="card"><h3>Faturamento x Meta por continente</h3><div class="note">% = atingimento da meta</div><div class="legend"><span><i style="background:var(--s1)"></i>Faturamento</span><span><i class="line" style="background:var(--meta)"></i>Meta</span></div><div id="cCont"></div></div>
-    <div class="card"><h3>Faturamento x Meta por categoria</h3><div class="note">% = atingimento da meta · participação no total entre parênteses</div><div class="legend"><span><i style="background:var(--s1)"></i>Faturamento</span><span><i class="line" style="background:var(--meta)"></i>Meta</span></div><div id="cCat"></div></div>
+    <div class="card"><h3>Faturamento x Meta por ano</h3><div class="note">% = atingimento da meta do ano</div><div class="legend"><span><i style="background:var(--s1)"></i>Faturamento</span></div><div id="cAno"></div></div>
+    <div class="card"><h3>Faturamento x Meta por continente</h3><div class="note">% = atingimento da meta</div><div class="legend"><span><i style="background:var(--s1)"></i>Faturamento</span></div><div id="cCont"></div></div>
+    <div class="card"><h3>Faturamento x Meta por categoria</h3><div class="note">% = atingimento da meta · participação no total entre parênteses</div><div class="legend"><span><i style="background:var(--s1)"></i>Faturamento</span></div><div id="cCat"></div></div>
     <div class="card"><h3>Faturamento por subcategoria</h3><div class="note">Ordenado do maior para o menor</div><div id="cSub"></div></div>
     <div class="card wide"><h3>Evolução mensal do faturamento</h3><div class="note">Cada linha é um ano · passe o mouse para ver os valores</div><div class="legend" id="lgMes"></div><div id="cMes"></div></div>
   </div>
@@ -100,7 +100,7 @@ th{color:var(--ink2);font-weight:600;font-size:12px}
   <div class="kpis" id="kpis2"></div>
   <div class="grid">
     <div class="card"><h3>Faturamento por categoria: 2018 x 2017</h3><div class="note">Variação % ao lado de cada categoria</div><div class="legend"><span><i style="background:var(--prev)"></i>2017</span><span><i style="background:var(--s1)"></i>2018</span></div><div id="dCat"></div></div>
-    <div class="card"><h3>Faturamento x Meta por continente: 2018 x 2017</h3><div class="note">Traço = meta do ano · % = atingimento</div><div class="legend"><span><i style="background:var(--prev)"></i>2017</span><span><i style="background:var(--s1)"></i>2018</span><span><i class="line" style="background:var(--meta)"></i>Meta</span></div><div id="dCont"></div></div>
+    <div class="card"><h3>Faturamento x Meta por continente: 2018 x 2017</h3><div class="note">% ao lado = variação e atingimento da meta de 2018</div><div class="legend"><span><i style="background:var(--prev)"></i>2017</span><span><i style="background:var(--s1)"></i>2018</span></div><div id="dCont"></div></div>
     <div class="card wide"><h3>Variação do faturamento por subcategoria (2018 vs 2017)</h3><div class="note">Verde = cresceu · vermelho = caiu</div><div id="dSubVar"></div></div>
     <div class="card wide"><h3>Detalhe por subcategoria</h3><div class="note">Representatividade = participação da subcategoria no faturamento do ano</div><div id="dTab"></div></div>
     <div class="card wide"><h3>Desktops: faturamento por continente</h3><div class="note">Onde está a queda da subcategoria</div><div class="legend"><span><i style="background:var(--prev)"></i>2017</span><span><i style="background:var(--s1)"></i>2018</span></div><div id="dDesk"></div></div>
@@ -150,7 +150,7 @@ function hbars(target, items, opt={}){
   const box=$(target); box.innerHTML='';
   const W=box.clientWidth||520, LW=opt.labelW||150, RW=opt.rightW||120, rowH=opt.prev?36:26, H=items.length*rowH+18;
   const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,height:H},box);
-  const max=Math.max(1,...items.map(i=>Math.max(i.v,i.meta||0,i.prev||0)));
+  const max=Math.max(1,...items.map(i=>Math.max(i.v,i.prev||0)));
   const x=v=>LW+(W-LW-RW)*v/max;
   for(let t=0;t<=4;t++){ const gx=x(max*t/4); el('line',{x1:gx,x2:gx,y1:0,y2:H-16,stroke:css('--grid')},svg); const tx=el('text',{x:gx,y:H-3,'text-anchor':t==0?'start':'middle'},svg); tx.textContent=mi(max*t/4).replace('R$ ',''); }
   items.forEach((it,i)=>{
@@ -161,7 +161,6 @@ function hbars(target, items, opt={}){
     if(opt.prev){ el('rect',{x:LW,y:y0,width:Math.max(0,x(it.prev)-LW),height:bh,rx:3,fill:css('--prev')},g); }
     const by=opt.prev?y0+bh+2:y0;
     el('rect',{x:LW,y:by,width:Math.max(0,x(it.v)-LW),height:bh,rx:3,fill:it.color||css('--s1')},g);
-    if(it.meta!=null){ const mx=x(it.meta); el('line',{x1:mx,x2:mx,y1:y0-2,y2:by+bh+2,stroke:css('--meta'),'stroke-width':2.5},g); }
     if(it.right){ const r=el('text',{x:W-RW+8,y:y0+(opt.prev?16:12),class:'lbl'},g); r.innerHTML=it.right; }
     hover(hit,it.label,it.tip||[mi(it.v)]);
   });
@@ -172,17 +171,16 @@ function vbars(target, items){
   const box=$(target); box.innerHTML='';
   const W=box.clientWidth||520, H=230, L=10, B=40, T=24;
   const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,height:H},box);
-  const max=Math.max(1,...items.map(i=>Math.max(i.v,i.meta||0)));
+  const max=Math.max(1,...items.map(i=>i.v));
   const y=v=>T+(H-B-T)*(1-v/max), bw=Math.min(90,(W-L*2)/items.length*0.5);
   for(let t=0;t<=4;t++){ const gy=y(max*t/4); el('line',{x1:0,x2:W,y1:gy,y2:gy,stroke:css('--grid')},svg); }
   items.forEach((it,i)=>{
     const cx=L+(W-L*2)*(i+.5)/items.length, g=el('g',{},svg);
     const hit=el('rect',{x:cx-bw,y:0,width:bw*2,height:H,fill:'transparent'},g);
     el('rect',{x:cx-bw/2,y:y(it.v),width:bw,height:H-B-y(it.v),rx:3,fill:css('--s1')},g);
-    if(it.meta!=null){ el('line',{x1:cx-bw/2-8,x2:cx+bw/2+8,y1:y(it.meta),y2:y(it.meta),stroke:css('--meta'),'stroke-width':2.5},g); }
     const t1=el('text',{x:cx,y:H-B+16,'text-anchor':'middle',class:'lbl'},g); t1.textContent=it.label;
     const t2=el('text',{x:cx,y:H-B+31,'text-anchor':'middle'},g); t2.textContent=it.sub||'';
-    const t3=el('text',{x:cx,y:Math.min(y(it.v),it.meta!=null?y(it.meta):1e9)-7,'text-anchor':'middle',class:'lbl'},g); t3.textContent=mi(it.v);
+    const t3=el('text',{x:cx,y:y(it.v)-7,'text-anchor':'middle',class:'lbl'},g); t3.textContent=mi(it.v);
     hover(hit,it.label,it.tip);
   });
 }
