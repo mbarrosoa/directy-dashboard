@@ -2,7 +2,7 @@
 
 Dashboard interativo que compara o faturamento com as metas (01/01/2017 a 16/03/2019) e o ano de 2018 com 2017.
 
-**Acesse o dashboard:** https://mbarrosoa.github.io/dashboard-directy/
+**Acesse o dashboard:** https://mbarrosoa.github.io/directy-dashboard/
 
 ## Páginas do dashboard
 - **Visão geral** – faturamento, meta, % de atingimento, lucro e quantidade, com filtros de ano, continente e categoria. Gráficos de faturamento x meta por ano, continente e categoria, ranking de subcategorias e evolução mensal.
